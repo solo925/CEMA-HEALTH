@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     # Third-party apps
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_prometheus',
     
     # Local apps
     'accounts',
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -39,7 +41,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
+
+
+
 
 ROOT_URLCONF = 'health_system.urls'
 
@@ -99,7 +105,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static fils
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -119,3 +125,54 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
+
+if DEBUG and os.environ.get('ENABLE_CHAOS', 'False') == 'True':
+    MIDDLEWARE += ['chaos_config.CustomChaosMonkeyMiddleware']
+    
+    
+
+
+# Sentry for error tracking
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+if not DEBUG:
+    sentry_sdk.init(
+        dsn="https://your-sentry-dsn-here@sentry.io/project-id",
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=0.5,
+        send_default_pii=False
+    )
+else:
+    
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+        },
+    }
+    
+
+# BACKUP_ROOT = os.path.join(BASE_DIR, 'backups')
+
+# # Create the backups directory if it doesn't exist
+# os.makedirs(BACKUP_ROOT, exist_ok=True) 
+    
+#     CRONJOBS = [
+#     ('0 1 * * *', 'django.core.management.call_command', ['backup_db']),  # Daily backup at 1 AM
+# ]
