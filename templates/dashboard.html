@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Health Information System{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Dashboard</h1>
+        <div>
+            <a href="{% url 'client_create' %}" class="btn btn-primary me-2">
+                <i class="bi bi-person-plus"></i> New Client
+            </a>
+            <a href="{% url 'program_create' %}" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i> New Program
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-primary h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-people text-primary me-2">
+                        
+                        <i class="bi bi-people text-primary me-2"></i>
+                        Total Clients
+                    </h5>
+                    <h2 class="display-4">{{ total_clients }}</h2>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'client_list' %}" class="text-decoration-none">View all clients <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-check2-circle text-success me-2"></i>
+                        Active Programs
+                    </h5>
+                    <h2 class="display-4">{{ active_programs }}</h2>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'program_list' %}?status=active" class="text-decoration-none">View active programs <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-info h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-clipboard2-plus text-info me-2"></i>
+                        Total Programs
+                    </h5>
+                    <h2 class="display-4">{{ total_programs }}</h2>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'program_list' %}" class="text-decoration-none">View all programs <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Clients -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Clients</h5>
+                    <a href="{% url 'client_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for client in recent_clients %}
+                            <a href="{% url 'client_detail' pk=client.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ client.first_name }} {{ client.last_name }}</h6>
+                                    <small>{{ client.registration_date|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1 text-muted">{{ client.email }}</p>
+                            </a>
+                        {% empty %}
+                            <div class="text-center py-3">
+                                <p class="text-muted">No clients registered yet</p>
+                                <a href="{% url 'client_create' %}" class="btn btn-sm btn-primary">Add Client</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Programs -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Active Programs</h5>
+                    <a href="{% url 'program_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for program in active_programs_list %}
+                            <a href="{% url 'program_detail' pk=program.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ program.name }}</h6>
+                                    <small>{{ program.enrolled_count }} enrolled</small>
+                                </div>
+                                <p class="mb-1 text-muted">Start date: {{ program.start_date|date:"M d, Y" }}</p>
+                            </a>
+                        {% empty %}
+                            <div class="text-center py-3">
+                                <p class="text-muted">No active programs</p>
+                                <a href="{% url 'program_create' %}" class="btn btn-sm btn-primary">Create Program</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
