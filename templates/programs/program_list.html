@@ -75,18 +75,18 @@
                         {% if program.capacity %}
                             <div class="progress mt-2" style="height: 8px;">
                                 <div class="progress-bar 
-                                    {% if program.enrolled_count/program.capacity > 0.9 %}
+                                    {% if program.capacity_usage_ratio > 90 %}
                                         bg-danger
-                                    {% elif program.enrolled_count/program.capacity > 0.7 %}
+                                    {% elif program.capacity_usage_ratio > 70 %}
                                         bg-warning
                                     {% else %}
                                         bg-success
                                     {% endif %}"
                                     role="progressbar" 
-                                    style="width: {{ program.enrolled_count|default:0|floatformat:0|safe }}%;"
-                                    aria-valuenow="{{ program.enrolled_count|default:0|floatformat:0|safe }}"
+                                    style="width: {{ program.capacity_usage_ratio }}%;"
+                                    aria-valuenow="{{ program.capacity_usage_ratio }}"
                                     aria-valuemin="0" 
-                                    aria-valuemax="{{ program.capacity }}">
+                                    aria-valuemax="100">
                                 </div>
                             </div>
                         {% endif %}

@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from .models import HealthProgram
 from .forms import ProgramForm
+from django.db import models 
 
 @login_required
 def program_list(request):
@@ -22,6 +23,13 @@ def program_list(request):
     if status_filter and status_filter != 'all':
         programs = programs.filter(status=status_filter)
     
+    # Calculate capacity usage ratio for each program
+    for program in programs:
+        if program.capacity:
+            program.capacity_usage_ratio = (program.enrolled_count / program.capacity) * 100
+        else:
+            program.capacity_usage_ratio = 0
+    
     # Pagination
     paginator = Paginator(programs, 10)
     page_number = request.GET.get('page')
@@ -34,14 +42,22 @@ def program_list(request):
     })
 
 @login_required
+
 def program_detail(request, pk):
     program = get_object_or_404(HealthProgram, pk=pk)
-    enrollments = program.enrollments.all().select_related('client')
-    
+    enrollments = program.enrollments.all()
+
+    # Calculate the capacity usage ratio
+    capacity_usage_ratio = 0
+    if program.capacity:
+        capacity_usage_ratio = (program.enrolled_count / program.capacity) * 100
+
     return render(request, 'programs/program_detail.html', {
         'program': program,
         'enrollments': enrollments,
+        'capacity_usage_ratio': capacity_usage_ratio,
     })
+
 
 @login_required
 def program_create(request):

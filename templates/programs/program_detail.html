@@ -76,19 +76,19 @@
                                         <span class="fw-bold">Capacity Usage:</span>
                                         <div class="progress mt-2" style="height: 12px;">
                                             <div class="progress-bar 
-                                                {% if program.enrolled_count/program.capacity > 0.9 %}
+                                                {% if capacity_usage_ratio > 90 %}
                                                     bg-danger
-                                                {% elif program.enrolled_count/program.capacity > 0.7 %}
+                                                {% elif capacity_usage_ratio > 70 %}
                                                     bg-warning
                                                 {% else %}
                                                     bg-success
                                                 {% endif %}"
                                                 role="progressbar" 
-                                                style="width: {% widthratio program.enrolled_count program.capacity 100 %}%;"
-                                                aria-valuenow="{% widthratio program.enrolled_count program.capacity 100 %}"
+                                                style="width: {{ capacity_usage_ratio }}%;"
+                                                aria-valuenow="{{ capacity_usage_ratio }}"
                                                 aria-valuemin="0" 
                                                 aria-valuemax="100">
-                                                {% widthratio program.enrolled_count program.capacity 100 %}%
+                                                {{ capacity_usage_ratio }}%
                                             </div>
                                         </div>
                                     </li>

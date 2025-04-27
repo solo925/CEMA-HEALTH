@@ -46,7 +46,8 @@ def client_create(request):
         form = ClientForm(request.POST)
         if form.is_valid():
             client = form.save()
-            messages.success(request, f'Client {client.get_full_name()} created successfully.')
+            full_name = f"{client.first_name} {client.last_name}"  # Concatenate first and last names
+            messages.success(request, f'Client {full_name} created successfully.')
             return redirect('client_detail', pk=client.pk)
     else:
         form = ClientForm()
@@ -55,6 +56,7 @@ def client_create(request):
         'form': form,
         'title': 'Create Client',
     })
+
 
 @login_required
 def client_update(request, pk):
